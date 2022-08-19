@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fly.store.mapper.UserMapper">
+    <sql id="BaseUserCol">
+        uid,username, password, salt, phone, email, gender,
+        avatar, is_delete, created_user, created_time, modified_user, modified_time
+    </sql>
+    <!--
+        id属性：给这个映射设定唯一的id
+        type：查询结果字段需要和哪个实体类进行映射
+        字段和实体类属性名称一致可以不进行映射（主键不可省略）
+    -->
+    <resultMap id="BaseRetMap" type="com.fly.store.pojo.User">
+        <id property="uid" column="uid"></id>
+        <result property="username" column="username"></result>
+        <result property="password" column="password"></result>
+        <result property="salt" column="salt"></result>
+        <result property="phone" column="phone"></result>
+        <result property="email" column="email"></result>
+        <result property="gender" column="gender"></result>
+        <result property="avatar" column="avatar"></result>
+        <result property="isDelete" column="is_delete"></result>
+        <result property="createUser" column="create_user"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="modifiedUser" column="modified_user"></result>
+        <result property="modifiedTime" column="modified_time"></result>
+    </resultMap>
+    <!--
+      useGeneratedKeys:开启某个字段自增
+      keyProperty:要设置为自增的字段
+    -->
+    <insert id="insertUser" parameterType="com.fly.store.pojo.User" useGeneratedKeys="true" keyProperty="uid">
+        insert into t_user (username, password, salt, phone, email, gender,
+        avatar, is_delete, created_user, created_time, modified_user, modified_time)
+        values (#{username},#{password},#{salt},#{phone},#{email},#{gender},#{avatar},#{isDelete},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+    </insert>
+
+    <select id="selectByUsername" parameterType="string" resultMap="BaseRetMap">
+        select <include refid="BaseUserCol"></include>
+        from t_user
+        where username = #{username}
+    </select>
+
+    <update id="updatePasswordByUid">
+        update t_user set password = #{password}, modified_user = #{modifiedUser},
+                          modified_time = #{modifiedTime}
+        where uid = #{uid}
+    </update>
+
+    <select id="selectByUid" resultMap="BaseRetMap">
+        select <include refid="BaseUserCol"></include>
+        from t_user
+        where uid = #{uid}
+    </select>
+
+    <update id="updateInfoByUid">
+        update t_user
+        set
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            modified_user = #{modifiedUser},modified_time = #{modifiedTime}
+        where uid = #{uid};
+    </update>
+
+    <update id="updateAvatarByUid">
+        update t_user
+        set avatar = #{avatar},
+            modified_user = #{modifiedUser},
+            modified_time = #{modifiedTime}
+        where uid = #{uid}
+    </update>
+</mapper>
